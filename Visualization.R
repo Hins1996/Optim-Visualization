@@ -17,12 +17,10 @@ T_zero <- (- matrix_T %*% c(1, 1, 1, 1))
 
 # Generate the dataset of PH distribution
 size <- 100
-data <- rphtype(size, alpha, matrix_T)
-# data <- rexp(size)
+data <- rphtype(size, alpha, matrix_T) ## Can be changed to any kind of random variable.
 
-# Randomly pick two orthogonal directions 
-#   which don't violate the equality constraints.
 
+# Randomly pick two orthogonal directions which don't violate the equality constraints.
 alpha_dx <- c(1, -1, 0.5, 0.5)
 alpha_dy <- c(-3/2, -1/4, 1, 1)
   
@@ -43,6 +41,52 @@ matrix_T_dy <- matrix(c(-1, -3/2, 1, 1,
 
 T_zero_dx <- c(-1, -1, -1, -1)
 T_zero_dy <- c(1/2, 1/2, 1/2, 1/2)
+
+# # Un-comment this block to use the second random basis
+# alpha_dx <- c(1, -1, 0.5, 0.5)
+# alpha_dy <- c(-3/2, -1/4, 1, 1)
+# 
+# matrix_T_dx <- matrix(c(1, -1, -0.5, -0.5,
+#                         -1, 1, -0.5, -0.5,
+#                         -0.5, -1, 1, -0.5,
+#                         -0.5, -1, -0.5, 1),
+#                       nrow = 4,
+#                       ncol = 4,
+#                       byrow = T)
+# matrix_T_dy <- matrix(c(-1, -3/2, 1, 1,
+#                         -3/2, -1, 1, 1,
+#                         1, -3/2, -1, 1,
+#                         1, -3/2, 1, -1),
+#                       nrow = 4,
+#                       ncol = 4,
+#                       byrow = T)
+# 
+# T_zero_dx <- c(1, 1, 1, 1)
+# T_zero_dy <- c(1/2, 1/2, 1/2, 1/2)
+
+# Un-comment this block to use the third random basis
+# alpha_dx <- c(1, -1, 0.5, 0.5)
+# alpha_dy <- c(-9/4, 1/2, -1, -2)
+# 
+# matrix_T_dx <- matrix(c(1, -1, -0.3, -0.7,
+#                         -1, 1, -0.5, -0.5,
+#                         -0.5, -1, 1, -0.5,
+#                         -0.1, -1, 0, 1),
+#                       nrow = 4,
+#                       ncol = 4,
+#                       byrow = T)
+# matrix_T_dy <- matrix(c(-1, -3/2, 1, 1,
+#                         -3/2, -1, 1, 1,
+#                         1, -3/2, -1, 1,
+#                         1, -1, 3/2, -1),
+#                       nrow = 4,
+#                       ncol = 4,
+#                       byrow = T)
+# 
+# T_zero_dx <- c(1, 1, 1, 1)
+# T_zero_dy <- c(1/2, 1/2, 1/2, 1/2)
+
+
 
 # Normalize direction vectors 
 alpha_dx <- alpha_dx / (sqrt(sum(alpha_dx^2)))
@@ -94,26 +138,13 @@ compute_grid <- function(x_range, y_range, stepX, stepY, outside) {
       matrix_T_tmp <- matrix_T + x_tmp * matrix_T_dx + y_tmp * matrix_T_dy
       T_zero_tmp <- T_zero + x_tmp * T_zero_dx + y_tmp * T_zero_dy
       
-      # if (i == 17 && j == 1){
-      #   print(matrix_T_tmp)
-      #   print(alpha_tmp)
-      #   print(T_zero_tmp)
-      #   print(sum(matrix_T_tmp[3,]) + T_zero_tmp[3])
-      #   print("=============")
-      # }
-      
       ## Check the non-negative constraints
       check_alpha <- all(alpha_tmp > 0)
+      check_T_zero <- all(T_zero_tmp > 0)
       
       tmp_M <- matrix_T_tmp
       tmp_M <- tmp_M - 2*diag(diag(tmp_M))
-
       check_matrix_T <- all(tmp_M > 0)
-      check_T_zero <- all(T_zero_tmp > 0)
-      
-      # if(i == 17 & j == 1){
-      #   print(check_T_zero)
-      # }
       
       ## Compute the log-likelihood values if applicable
       ## Otherwise fill in with the pre-defined value
@@ -133,9 +164,9 @@ compute_grid <- function(x_range, y_range, stepX, stepY, outside) {
 # Drawing -----------------------------------------------------------------
 
 # Drawing settings
-stepX <- 0.001
+stepX <- 0.001 ## Edit the drawing precision
 stepY <- 0.001
-x_range <- c(-0.2, 0.3)
+x_range <- c(-0.2, 0.3) ## Edit the drawing range
 y_range <- c(-0.2, 0.3)
 outside <- 0
 
@@ -161,10 +192,3 @@ fig2 <- plot_ly(type = "contour", x = ~x_list, y = ~y_list, z = ~df,
 
 fig1
 fig2
-
-
-
-
-
-
-
